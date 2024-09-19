@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Non-Profit Crowdfunding</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Welcome to Our Non-Profit Crowdfunding Platform</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="search.html">Search Fundraisers</a>
+        </nav>
+    </header>
+
+    <section>
+        <h2>Active Fundraisers</h2>
+        <div id="fundraisers-container"></div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('http://localhost:3000/fundraisers')
+                .then(response => response.json())
+                .then(data => {
+                    const fundraisersContainer = document.getElementById('fundraisers-container');
+                    if (data.length > 0) {
+                        data.forEach(fundraiser => {
+                            const fundraiserDiv = document.createElement('div');
+                            fundraiserDiv.classList.add('fundraiser');
+                            fundraiserDiv.innerHTML = `
+                                <h3>${fundraiser.CAPTION}</h3>
+                                <p>Organizer: ${fundraiser.ORGANIZER}</p>
+                                <p>City: ${fundraiser.CITY}</p>
+                                <p>Target: ${fundraiser.TARGET_FUNDING} AUD</p>
+                                <p>Raised: ${fundraiser.CURRENT_FUNDING} AUD</p>
+                                <p>Category: ${fundraiser.category_name}</p>
+                                <a href="fundraiser.html?id=${fundraiser.FUNDRAISER_ID}">View Details</a>
+                            `;
+                            fundraisersContainer.appendChild(fundraiserDiv);
+                        });
+                    } else {
+                        fundraisersContainer.innerHTML = '<p>No active fundraisers available.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching fundraisers:', error);
+                    document.getElementById('fundraisers-container').innerHTML = '<p>Failed to load fundraisers.</p>';
+                });
+        });
+    </script>
+</body>
+</html>

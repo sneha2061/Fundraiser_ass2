@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Fundraisers</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Search Fundraisers</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="search.html">Search Fundraisers</a>
+        </nav>
+    </header>
+
+    <section>
+        <form id="search-form">
+            <label for="organizer">Organizer:</label>
+            <input type="text" id="organizer" name="organizer">
+
+            <label for="city">City:</label>
+            <input type="text" id="city" name="city">
+
+            <label for="category">Category:</label>
+            <select id="category" name="category">
+                <option value="">--Select Category--</option>
+            </select>
+
+            <button type="submit">Search</button>
+            <button type="button" onclick="clearCheckboxes()">Clear</button>
+        </form>
+
+        <div id="search-results"></div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fetch categories for the dropdown
+            fetch('http://localhost:3000/categories')
+                .then(response => response.json())
+                .then(categories => {
+                    const categorySelect = document.getElementById('category');
+                    categories.forEach(category => {
+                        const option = document.createElement('option');
+                        option.value = category.CATEGORY_ID;
+                        option.textContent = category.NAME;
+                        categorySelect.appendChild(option);
+                    });
+                });
+
+            // Handle form submission
+            document.getElementById('search-form').addEventListener('submit', event => {
+                event.preventDefault();
+                const organizer = document.getElementById('organizer').value;
+                const city = document.getElementById('city').value;
+                const category = document.getElementById('category').value;
+
+                let query = 'http://localhost:3000/search?';
+                if (organizer) query += `organizer=${organizer}&`;
+                if (city) query += `city=${city}&`;
+                if (category) query += `category=${category}`;
+
+                fetch(query)
+                    .then(response => response.json())
+                    .then(data => {
+                        const searchResults = document.getElementById('search-results');
+                        searchResults.innerHTML = '';
+
+                        if (data.length > 0) {
+                            data.forEach(fundraiser => {
+                                const resultDiv = document.createElement('div');
+                                resultDiv.classList.add('fundraiser');
+                                resultDiv.innerHTML = `
+                                    <h3>${fundraiser.CAPTION}</h3>
+                                    <p>Organizer: ${fundraiser.ORGANIZER}</p>
+                                    <p>City: ${fundraiser.CITY}</p>
+                                    <p>Target: ${fundraiser.TARGET_FUNDING} AUD</p>
+                                    <p>Raised: ${fundraiser.CURRENT_FUNDING} AUD</p>
+                                    <p>Category: ${fundraiser.category_name}</p>
+                                    <a href="fundraiser.html?id=${fundraiser.FUNDRAISER_ID}">View Details</a>
+                                `;
+                                searchResults.appendChild(resultDiv);
+                            });
+                        } else {
+                            searchResults.innerHTML = '<p>No fundraisers found.</p>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching fundraisers:', error);
+                    });
+            });
+        });
+
+        function clearCheckboxes() {
+            document.getElementById('organizer').value = '';
+            document.getElementById('city').value = '';
+            document.getElementById('category').selectedIndex = 0;
+            document.getElementById('search-results').innerHTML = '';
+        }
+    </script>
+</body>
+</html>

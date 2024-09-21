@@ -7,17 +7,21 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>Welcome to Our Non-Profit Crowdfunding Platform</h1>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="search.html">Search Fundraisers</a>
-        </nav>
-    </header>
 
-    <section>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Help Us Make A Difference</h1>
+            <p>Join our mission to support communities in need. Every contribution counts.</p>
+            <a href="search.html" class="cta-button">Find a Cause</a>
+            <a href="#fundraisers" class="cta-button secondary">View Active Fundraisers</a>
+        </div>
+    </section>
+
+    <!-- Fundraisers Section -->
+    <section id="fundraisers" class="fundraisers-section">
         <h2>Active Fundraisers</h2>
-        <div id="fundraisers-container"></div>
+        <div id="fundraisers-container" class="fundraisers-grid"></div>
     </section>
 
     <script>
@@ -28,18 +32,23 @@
                     const fundraisersContainer = document.getElementById('fundraisers-container');
                     if (data.length > 0) {
                         data.forEach(fundraiser => {
-                            const fundraiserDiv = document.createElement('div');
-                            fundraiserDiv.classList.add('fundraiser');
-                            fundraiserDiv.innerHTML = `
+                            const fundraiserCard = document.createElement('div');
+                            fundraiserCard.classList.add('fundraiser-card');
+                            const progressPercentage = (fundraiser.CURRENT_FUNDING / fundraiser.TARGET_FUNDING) * 100;
+
+                            fundraiserCard.innerHTML = `
+                                <img src="./Images/img.jpg" alt="Fundraiser Image">
                                 <h3>${fundraiser.CAPTION}</h3>
                                 <p>Organizer: ${fundraiser.ORGANIZER}</p>
                                 <p>City: ${fundraiser.CITY}</p>
-                                <p>Target: ${fundraiser.TARGET_FUNDING} AUD</p>
-                                <p>Raised: ${fundraiser.CURRENT_FUNDING} AUD</p>
+                                <div class="progress-bar">
+                                    <div class="progress" style="width: ${progressPercentage}%;"></div>
+                                </div>
+                                <p>Raised: ${fundraiser.CURRENT_FUNDING} AUD of ${fundraiser.TARGET_FUNDING} AUD</p>
                                 <p>Category: ${fundraiser.category_name}</p>
-                                <a href="fundraiser.html?id=${fundraiser.FUNDRAISER_ID}">View Details</a>
+                                <a href="fundraiser.html?id=${fundraiser.FUNDRAISER_ID}" class="details-button">View Details</a>
                             `;
-                            fundraisersContainer.appendChild(fundraiserDiv);
+                            fundraisersContainer.appendChild(fundraiserCard);
                         });
                     } else {
                         fundraisersContainer.innerHTML = '<p>No active fundraisers available.</p>';
@@ -51,5 +60,6 @@
                 });
         });
     </script>
+
 </body>
 </html>

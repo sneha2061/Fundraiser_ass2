@@ -1,49 +1,98 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fundraiser Details</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <header>
-        <h1>Fundraiser Details</h1>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="search.html">Search Fundraisers</a>
-        </nav>
+
+    <!-- Header Section (Optional Navigation or Hero) -->
+    <header class="hero">
+        <div class="hero-content">
+            <h1>Fundraiser Details</h1>
+            <p>Learn more about this cause and how you can contribute.</p>
+        </div>
     </header>
 
-    <section id="fundraiser-details"></section>
+    <!-- Fundraiser Details Section -->
+    <section class="fundraiser-details-section">
+        <div class="fundraiser-container">
+            <div id="fundraiser-details" class="fundraiser-details">
+                <!-- Fundraiser details will be populated via JavaScript -->
+            </div>
+            <div class="donate-container">
+                <h2>Contribute to this Cause</h2>
+                <form id="donate-form">
+                    <div class="form-group">
+                        <label for="amount">Amount (AUD):</label>
+                        <input type="number" id="amount" name="amount" min="1" required>
+                    </div>
+                    <button type="submit" class="cta-button">Donate</button>
+                </form>
+            </div>
+        </div>
+    </section>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const fundraiserId = urlParams.get('id');
-
         document.addEventListener('DOMContentLoaded', () => {
+            // Get the fundraiser ID from the query string
+            const urlParams = new URLSearchParams(window.location.search);
+            const fundraiserId = urlParams.get('id');
+
             if (fundraiserId) {
+                // Fetch the specific fundraiser details using the ID
                 fetch(`http://localhost:3000/fundraiser/${fundraiserId}`)
                     .then(response => response.json())
                     .then(fundraiser => {
-                        const detailsContainer = document.getElementById('fundraiser-details');
-                        detailsContainer.innerHTML = `
-                            <h2>${fundraiser.CAPTION}</h2>
-                            <p>Organizer: ${fundraiser.ORGANIZER}</p>
-                            <p>City: ${fundraiser.CITY}</p>
-                            <p>Target: ${fundraiser.TARGET_FUNDING} AUD</p>
-                            <p>Raised: ${fundraiser.CURRENT_FUNDING} AUD</p>
-                            <p>Category: ${fundraiser.category_name}</p>
-                            <button onclick="alert('This feature is under construction.')">Donate</button>
-                        `;
+                        const fundraiserDetails = document.getElementById('fundraiser-details');
+                        
+                        // Check if fundraiser data is found
+                        if (fundraiser) {
+                            const progressPercentage = (fundraiser.CURRENT_FUNDING / fundraiser.TARGET_FUNDING) * 100;
+
+                            // Dynamically populate the fundraiser details section
+                            fundraiserDetails.innerHTML = `
+                                <img src="./Images/img.jpg" alt="Fundraiser Image">
+                                <h2>${fundraiser.CAPTION}</h2>
+                                <p>Organizer: ${fundraiser.ORGANIZER}</p>
+                                <p>City: ${fundraiser.CITY}</p>
+                                <p>Category: ${fundraiser.category_name}</p>
+                                <p>Description: ${fundraiser.DESCRIPTION}</p>
+                                <div class="progress-bar">
+                                    <div class="progress" style="width: ${progressPercentage}%;"></div>
+                                </div>
+                                <p>Raised: ${fundraiser.CURRENT_FUNDING} AUD of ${fundraiser.TARGET_FUNDING} AUD</p>
+                            `;
+                        } else {
+                            fundraiserDetails.innerHTML = '<p>Fundraiser not found.</p>';
+                        }
                     })
                     .catch(error => {
                         console.error('Error fetching fundraiser details:', error);
+                        document.getElementById('fundraiser-details').innerHTML = '<p>Failed to load fundraiser details.</p>';
                     });
             } else {
-                document.getElementById('fundraiser-details').innerHTML = '<p>Fundraiser not found.</p>';
+                document.getElementById('fundraiser-details').innerHTML = '<p>Invalid fundraiser ID.</p>';
             }
+
+            // Handle donation form submission
+            const donateForm = document.getElementById('donate-form');
+            donateForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const amount = document.getElementById('amount').value;
+
+                fetch(`http://localhost:3000/fundraisers/${fundraiserId}/donate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ amount: parseFloat(amount) })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Thank you for your donation!');
+                    location.reload(); // Reload the page to reflect the new total
+                })
+                .catch(error => {
+                    console.error('Error processing donation:', error);
+                    alert('Failed to process donation.');
+                });
+            });
         });
     </script>
+
 </body>
 </html>

@@ -5,100 +5,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Fundraisers</title>
     <link rel="stylesheet" href="styles.css">
+    <meta name="description" content="Find the cause that matters most to you by searching through active fundraisers.">
 </head>
 <body>
-    <header>
+
+    <!-- Navigation Menu -->
+ <nav class="navbar">
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="search.html">Search Fundraisers</a></li>
+        
+    </ul>
+</nav>
+        
+    
+<header class="hero search-hero">
+    <div class="hero-content">
         <h1>Search Fundraisers</h1>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="search.html">Search Fundraisers</a>
-        </nav>
-    </header>
+        <p>Find the cause that matters most to you</p>
+    </div>
+</header>
 
-    <section>
-        <form id="search-form">
-            <label for="organizer">Organizer:</label>
-            <input type="text" id="organizer" name="organizer">
+<section class="search-section">
+    <div class="search-container">
+        <form id="search-form" class="search-form">
+            <div class="form-group">
+                <label for="organizer">Organizer:</label>
+                <input type="text" id="organizer" name="organizer" class="form-input">
+            </div>
 
-            <label for="city">City:</label>
-            <input type="text" id="city" name="city">
+            <div class="form-group">
+                <label for="city">City:</label>
+                <input type="text" id="city" name="city" class="form-input">
+            </div>
 
-            <label for="category">Category:</label>
-            <select id="category" name="category">
-                <option value="">--Select Category--</option>
-            </select>
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <select id="category" name="category" class="form-select">
+                    <option value="">--Select Category--</option>
+                </select>
+            </div>
 
-            <button type="submit">Search</button>
-            <button type="button" onclick="clearCheckboxes()">Clear</button>
+            <button type="submit" class="cta-button">Search</button>
+            <button type="button" class="cta-button secondary" onclick="clearForm()">Clear</button>
         </form>
 
-        <div id="search-results"></div>
-    </section>
+        <div id="search-results" class="fundraisers-grid"></div>
+        <div id="loading" class="loading-message">Searching...</div>
+        <div id="error-message" class="error-message"></div>
+    </div>
+</section>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Fetch categories for the dropdown
-            fetch('http://localhost:3000/categories')
-                .then(response => response.json())
-                .then(categories => {
-                    const categorySelect = document.getElementById('category');
-                    categories.forEach(category => {
-                        const option = document.createElement('option');
-                        option.value = category.CATEGORY_ID;
-                        option.textContent = category.NAME;
-                        categorySelect.appendChild(option);
-                    });
-                });
-
-            // Handle form submission
-            document.getElementById('search-form').addEventListener('submit', event => {
-                event.preventDefault();
-                const organizer = document.getElementById('organizer').value;
-                const city = document.getElementById('city').value;
-                const category = document.getElementById('category').value;
-
-                let query = 'http://localhost:3000/search?';
-                if (organizer) query += `organizer=${organizer}&`;
-                if (city) query += `city=${city}&`;
-                if (category) query += `category=${category}`;
-
-                fetch(query)
-                    .then(response => response.json())
-                    .then(data => {
-                        const searchResults = document.getElementById('search-results');
-                        searchResults.innerHTML = '';
-
-                        if (data.length > 0) {
-                            data.forEach(fundraiser => {
-                                const resultDiv = document.createElement('div');
-                                resultDiv.classList.add('fundraiser');
-                                resultDiv.innerHTML = `
-                                    <h3>${fundraiser.CAPTION}</h3>
-                                    <p>Organizer: ${fundraiser.ORGANIZER}</p>
-                                    <p>City: ${fundraiser.CITY}</p>
-                                    <p>Target: ${fundraiser.TARGET_FUNDING} AUD</p>
-                                    <p>Raised: ${fundraiser.CURRENT_FUNDING} AUD</p>
-                                    <p>Category: ${fundraiser.category_name}</p>
-                                    <a href="fundraiser.html?id=${fundraiser.FUNDRAISER_ID}">View Details</a>
-                                `;
-                                searchResults.appendChild(resultDiv);
-                            });
-                        } else {
-                            searchResults.innerHTML = '<p>No fundraisers found.</p>';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching fundraisers:', error);
-                    });
-            });
+<script src="script.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        populateCategories();
+        
+        document.getElementById('search-form').addEventListener('submit', event => {
+            event.preventDefault();
+            const organizer = document.getElementById('organizer').value;
+            const city = document.getElementById('city').value;
+            const category = document.getElementById('category').value;
+            searchFundraisers(organizer, city, category);
         });
+    });
 
-        function clearCheckboxes() {
-            document.getElementById('organizer').value = '';
-            document.getElementById('city').value = '';
-            document.getElementById('category').selectedIndex = 0;
-            document.getElementById('search-results').innerHTML = '';
-        }
-    </script>
+    function clearForm() {
+        document.getElementById('search-form').reset();
+        document.getElementById('search-results').innerHTML = '';
+    }
+</script>
+
 </body>
 </html>

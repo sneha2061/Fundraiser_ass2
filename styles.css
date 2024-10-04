@@ -1,0 +1,257 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.4;
+    background-color: #e0adad;
+    color: #0c0c0c;
+}
+
+h1, h2, h3 {
+    margin-bottom: 2rem;
+}
+
+/* Responsive styles for the navbar */
+@media (max-width: 768px) {
+    .nav-links {
+        flex-direction: column; /* Stack items vertically */
+        display: none; /* Initially hide menu */
+        background-color: #333; /* Background color */
+        position: absolute; /* Position it absolutely */
+        top: 50px; /* Below the navbar */
+        left: 0; /* Align to left */
+        width: 100%; /* Full width */
+    }
+
+    .nav-links.active {
+        display: flex; /* Show menu when active */
+    }
+
+    .navbar {
+        position: relative; /* Position for dropdown */
+    }
+
+    .menu-toggle {
+        display: block; /* Show toggle button */
+    }
+}
+
+/* Style for the toggle button */
+.menu-toggle {
+    display: none; /* Hidden by default */
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block; /* Show button on mobile */
+    }
+}
+
+/* Hero Section */
+.hero {
+        background-image: url('./Images/img.jpg'); 
+        background-size: cover;  
+        background-position: center;  
+        background-repeat: no-repeat;  
+    color: #0f0202;
+    text-align: center;
+    padding: 90px 30px;
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+}
+
+.hero p {
+    font-size: 1.25rem;
+    margin-bottom: 3rem;
+}
+
+.hero .cta-button {
+    background-color: #ffc107;
+    color: #000;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    margin-top: 1rem;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.hero.cta-button.secondary {
+    background-color: #474e4e;
+    color: #fff;
+    margin-top: 3rem;
+}
+
+/* Fundraiser Card Grid */
+.fundraisers-section {
+    padding: 20px;
+}
+
+.fundraisers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-gap: 20px;
+}
+
+.fundraiser-card {
+    background-color: #f1d8d8;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.fundraiser-card:hover {
+    transform: scale(1.02);
+}
+
+.fundraiser-card img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.fundraiser-card h3 {
+    margin: 10px 0;
+}
+
+.details-button {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 15px;
+    background-color: #d83209;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 0.9rem;
+}
+
+.details-button:hover {
+    background-color: #179b73;
+}
+
+/* Progress Bar */
+.progress-bar {
+    background-color: #a88888;
+    border-radius: 10px;
+    overflow: hidden;
+    height: 20px;
+    margin: 10px 0;
+}
+
+.progress {
+    background-color: #ee3740;
+    height: 100%;
+    transition: width 0.4s;
+}
+
+/* Search Form */
+.search-form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 30px;
+    color: #000;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-input, .form-select {
+    width: 70%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    margin-top: 20px;
+}
+
+.cta-button {
+    width: 20%;
+    background-color: rgb(204, 224, 88);
+    padding: 7px ;
+    margin-top: 10px;
+    border-radius: 5px;
+}
+
+.cta-button.secondary {
+    background-color: #494545;
+    color: #fff;
+    margin-top: 2rem;
+}
+
+/*Fundraiser detail form*/
+.donate-container {
+    color: #080808;
+    margin-top: 10px;
+
+}
+
+/* Dialog Styles */
+.dialog {
+    display: contents; 
+    position: fixed; 
+    z-index: 1000; 
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgba(0, 0, 0, 0.4); 
+}
+
+.dialog-content {
+    background-color: #ee6060;
+    margin: 2% auto; 
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%; 
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+.cta-button1 {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.cta-button1:hover {
+    background-color: #0056b3;
+}
+
+.phone-number {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #333;
+    font-weight: bold;
+}
+

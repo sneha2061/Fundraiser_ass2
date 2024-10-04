@@ -3,47 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fundraiser Details</title>
+    <title>Fundraiser by Id</title>
     <link rel="stylesheet" href="styles.css">
+    <meta name="description" content="Learn more about a fundraiser by ID and how you can contribute.">
 </head>
 <body>
-    <header>
+ <!-- Navigation Menu -->
+ <nav class="navbar">
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="search.html">Search Fundraisers</a></li>
+    
+    </ul>
+ </nav>
+
+<header class="hero">
+    <div class="hero-content">
         <h1>Fundraiser Details</h1>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="search.html">Search Fundraisers</a>
-        </nav>
-    </header>
+        <p>Learn more about this cause and how you can contribute.</p>
+    </div>
+</header>
 
-    <section id="fundraiser-details"></section>
+<section class="fundraiser-details-section">
+    <div class="fundraiser-container">
+        <div id="fundraiser-details" class="fundraiser-details"></div>
+        <div class="donate-container">
+            <h2>Contribute to this Cause</h2>
+            <form id="donate-form">
+                <div class="form-group">
+                    <label for="amount">Amount (AUD):</label>
+                    <input type="number" id="amount" name="amount" min="1" required>
+                    <span id="error-message" style="color: red;"></span>
+                </div>
+                <a href="donation.html?fundraiser_id=YOUR_FUNDRAISER_ID" id="donate-button" class="donate-button">Donate</a>
+            </form>
+        </div>
+    </div>
+</section>
 
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const fundraiserId = urlParams.get('id');
+<script src="script.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const fundraiserId = getQueryParam('id');
+        if (fundraiserId) {
+            fetchFundraiserDetails(fundraiserId);
+        } else {
+            document.getElementById('fundraiser-details').innerHTML = '<p>Invalid fundraiser ID.</p>';
+        }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            if (fundraiserId) {
-                fetch(`http://localhost:3000/fundraiser/${fundraiserId}`)
-                    .then(response => response.json())
-                    .then(fundraiser => {
-                        const detailsContainer = document.getElementById('fundraiser-details');
-                        detailsContainer.innerHTML = `
-                            <h2>${fundraiser.CAPTION}</h2>
-                            <p>Organizer: ${fundraiser.ORGANIZER}</p>
-                            <p>City: ${fundraiser.CITY}</p>
-                            <p>Target: ${fundraiser.TARGET_FUNDING} AUD</p>
-                            <p>Raised: ${fundraiser.CURRENT_FUNDING} AUD</p>
-                            <p>Category: ${fundraiser.category_name}</p>
-                            <button onclick="alert('This feature is under construction.')">Donate</button>
-                        `;
+        document.getElementById('donate-form').addEventListener('submit', event => {
+            event.preventDefault();
+            const amount = document.getElementById('amount').value;
+            const errorMessage = document.getElementById('error-message');
+
+            if (validateDonationAmount(amount)) {
+                donateToFundraiser(fundraiserId, parseFloat(amount))
+                    .then(response => {
+                        if (response.ok) {
+                            alert('Thank you for your donation!');
+                            window.location.reload(); // Refresh the page to update funding amount
+                        } else {
+                            response.json().then(data => {
+                                errorMessage.textContent = data.message || 'Failed to process donation.';
+                            });
+                        }
                     })
                     .catch(error => {
-                        console.error('Error fetching fundraiser details:', error);
+                        console.error('Error during donation:', error);
+                        errorMessage.textContent = 'An error occurred. Please try again.';
                     });
-            } else {
-                document.getElementById('fundraiser-details').innerHTML = '<p>Fundraiser not found.</p>';
             }
         });
-    </script>
+    });
+</script>
 </body>
 </html>
+

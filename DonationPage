@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donate to Fundraiser</title>
+    <link rel="stylesheet" href="styles.css">
+    <meta name="description" content="Donate to a specific fundraiser and make a difference.">
+</head>
+  <body>
+   <!-- Navigation Menu -->
+     <nav class="navbar">
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="search.html">Search Fundraisers</a></li>
+        </ul>
+     </nav>
+    <header class="donator">
+        <div class="donator-content">
+            <h1>Donate to a Fundraiser</h1>
+            <p>Fill up your details and make your contribution to a cause you care about.</p>
+        </div>
+    </header>
+
+    <section class="donation-section">
+        <div class="donation-container">
+            <h2>Contribute to this Cause</h2>
+            <!-- Form for donator to add details -->
+            <form id="donation-form">
+                <div class="form-group">
+                    <label for="donator-name">First Name:</label>
+                    <input type="text" id="donator-name" placeholder="Your Name" required><br/>
+
+                    <label for="last-name">Last Name:</label>
+                    <input type="text" id="last-name" placeholder="Your Last Name" required><br/>
+
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" placeholder="Your Email" required><br/>
+
+                    <label for="amount">Amount (AUD):</label>
+                    <input type="number" id="amount" name="amount" min="5" required><br/>
+                    <span id="error-message" style="color: red;"></span>
+                </div>
+                <button type="submit" class="donate-button">Submit Donation</button>
+            </form>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const fundraiserId = getQueryParam('fundraiser_id');
+            if (!fundraiserId) {
+                alert('No fundraiser selected for a donation');
+                return;
+            }
+
+            document.getElementById('donation-form').addEventListener('submit', event => {
+                event.preventDefault();
+
+                const firstName = document.getElementById('donator-name').value.trim();
+                const lastName = document.getElementById('last-name').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const amount = parseFloat(document.getElementById('amount').value);
+                const errorMessage = document.getElementById('error-message');
+
+                // Minimum donation of $5 AUD
+                if (!firstName || !lastName || !email || isNaN(amount) || amount < 5) {
+                    errorMessage.textContent = 'Please provide valid details. Minimum amount to donate is $5 AUD.';
+                    return;
+                }
+
+                const donationData = {
+                    donor_name: `${firstName} ${lastName}`,
+                    email: email,
+                    amount: amount
+                };
+
+                fetch(`http://localhost:3060/fundraiser/${fundraiserId}/donate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(donationData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message === 'Donation added') {
+                        alert('Thank you for donating');
+                        window.location.href = `fundraiser.html?id=${fundraiserId}`;
+                    } else {
+                        errorMessage.textContent = data.message || 'Failed to process donation';
+                    }
+                })
+                .catch(error => {
+                    console.error('There is an error', error);
+                    errorMessage.textContent = 'There is an error. Please try again.';
+                });
+            });
+        });
+
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+    </script>
+  </body>
+</html>

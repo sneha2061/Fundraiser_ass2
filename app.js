@@ -97,7 +97,7 @@ app.get('/fundraiser/:id', async (req, res) => {
         // Combine fundraiser details with donations
         const fundraiserDetails = {
             ...fundraiser[0],
-            donations
+            donations: donations.length ? donations :[]
         };
 
         res.json(fundraiserDetails);
@@ -129,7 +129,7 @@ app.post('/fundraiser/:id/donate', async (req, res) => {
             [amount, id]
         );
 
-        res.status(201).json({ message: 'Donation successfully added' });
+        res.status(200).json({ message: 'Donation successfully added' });
     } catch (error) {
         console.error('Error adding donation:', error);
         res.status(500).json({ message: 'Failed to add donation' });
